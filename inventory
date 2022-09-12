@@ -1,0 +1,16 @@
+all:
+  hosts:
+    mail.example.com:
+	IP_ADDRESS_MAIL_EXAMPLE:
+  children:
+    webserver:
+	  hosts:
+	    web01:
+		IP_ADDRESS_WEB01:
+	docker:
+	  hosts:
+	    docker01:
+		IP_ADDRESS_DOCKER01:
+		vars:
+		  ansible_user: USERNAME
+		  ansible_password: PASSWORD
