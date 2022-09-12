@@ -1,0 +1,64 @@
+- name: install webserver
+  hosts: webserver
+  become: true
+  tasks:
+    - name: ensure nginx is at the latest version
+	  apt: name=nginx state:latest
+	- name: start nginx
+	  service:
+	    name: nginx
+		state: started
+		
+  handlers:
+    - name: Restart webserver
+	  service:
+	    name: webserver
+		state: restarted
+  
+- name: install docker
+  hosts: docker
+  become: true
+  tasks :
+    - name: install Dependencies
+	  apt:
+	    name: "{{item}}"
+		state: present
+		update_cache: yes
+	  loop:
+	    - apt-transport-https
+		- ca-certificates
+		- curl
+		- gnupg-agent
+		- software-properties-common
+	
+	- name: Add GPG Key
+	  apt_key: 
+	    url: https://download.docker.com/linux/ubuntu
+		state: present
+		
+	- name: Add Docker Repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu focal stable
+		state: present
+		
+    - name: Install Docker
+	  apt:
+	    name: "{{item}}"
+		state: latest
+		update_cache: yes
+	  loop:
+	    - docker-ce
+		- docker-ce-cli
+		- containerd.io
+	- name: start docker service
+	  service:
+	    name: docker
+		state: started
+		enabled: yes
+  handlers:
+    - name: Restart Docker
+	  service:
+	    name: docker
+		state: restarted
+  
+  
